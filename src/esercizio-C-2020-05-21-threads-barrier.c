@@ -34,6 +34,7 @@ void * pthread_function(void * arg){
     sleep(rnd);
 
     check = pthread_mutex_lock(&mutex);
+	
     char * t1 = "\nfase 1, thread id= ";
     length = strlen(t1);
     write(fd, t1, length);
@@ -43,11 +44,13 @@ void * pthread_function(void * arg){
     length = strlen(t2);
     write(fd, t2, length);
     write(fd, tmp, sizeof(tmp)-1);
+	
     check = pthread_mutex_unlock(&mutex);
 
     check = pthread_barrier_wait(&thread_barrier);
     
     check = pthread_mutex_lock(&mutex);
+	
     char * t3 = "\nfase 2, thread id= ";
     length = strlen(t3);
     write(fd, t3, length);
@@ -83,15 +86,15 @@ int main(int argc, char * argv[]) {
     int * fd = malloc(sizeof(int));
 
     *fd = open("file.txt",
-				  O_CREAT | O_TRUNC | O_WRONLY,
-				  S_IRUSR | S_IWUSR 
-				 );
+			  O_CREAT | O_TRUNC | O_WRONLY,
+			  S_IRUSR | S_IWUSR 
+			 );
 
     res = pthread_barrier_init(&thread_barrier, NULL, M); 
     if(res != 0) {
             perror("pthread_barrier_init");
-            exit(EXIT_FAILURE);
-        }
+            exit(EXIT_FAILURE);	
+    }
     
     for(int i = 0; i < M; i++) {
         res = pthread_create(&threads[i], NULL, pthread_function, fd);
@@ -107,7 +110,7 @@ int main(int argc, char * argv[]) {
 			perror("pthread_join");
 			exit(EXIT_FAILURE);
 		}
-	}
+    }
 
     res = pthread_barrier_destroy(&thread_barrier);
     if(res != 0) {
